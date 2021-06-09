@@ -77,19 +77,23 @@ module.exports = {
     },
   },
   devtool: false,
+  watchOptions: {
+    ignored: /node_modules/,
+    aggregateTimeout: 333,
+    poll: false
+  },
   module: {
+    noParse: /dolphin-weex-ui/,
     rules: [
       {
         test: /\.js$/,
         exclude: /node_modules/,
-        use: {
-          loader: 'babel-loader',
-        },
+        use: ['babel-loader'],
       },
       {
         test: /\.vue$/,
         exclude: /node_modules/,
-        loader: 'weex-vue-loader',
+        use: ['weex-vue-loader'],
         // weex: npm i babel-core
       },
       {

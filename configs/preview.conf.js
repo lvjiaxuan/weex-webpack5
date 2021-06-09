@@ -7,7 +7,7 @@ const { VueLoaderPlugin } = require('vue-loader')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const joinCwd = (...paths) => path.join(cwd, ...paths)
 const { entry: weexEntries } = require('./weex.conf')
-
+const isDevelopment = process.env.NODE_ENV === 'development'
 
 const getIPv4 = () => {
   for(const name in infos) {
@@ -19,6 +19,7 @@ const getIPv4 = () => {
 }
 
 module.exports = {
+  target: isDevelopment ? 'web' : 'browserslist',
   context: cwd,
   mode: 'development',
   entry: joinCwd('preview/index.js'),
@@ -32,14 +33,16 @@ module.exports = {
   },
   devtool: false,
   devServer: {
-    contentBase: cwd,
+    host: getIPv4(),
+    contentBase: joinCwd('dist'),
+    watchContentBase: false,
     // openPage: '?page=aa|bb',
     // index: 'index.html',
     compress: true, // 开启 gzip
-    bonjour: true, // 广播？
+    // bonjour: true, // 广播？
     open: false,
-    host: getIPv4(),
-    useLocalIp: true,
+    // useLocalIp: true,
+    hot: true,
     // port: 8080,
     // onenPage: '',
     // before: (app, server, compiler) => {},

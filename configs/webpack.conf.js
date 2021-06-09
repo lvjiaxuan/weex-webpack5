@@ -27,6 +27,7 @@ isDevelopment &&
 
     console.log('weex startTime', stats.startTime)
     console.log('weex   endTime', stats.endTime)
+    console.log('     spentTime', stats.endTime - stats.startTime)
   })
 
 module.exports = isDevelopment

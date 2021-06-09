@@ -8,6 +8,7 @@
     "build": "webpack --config ./configs/webpack.conf.js --color --node-env production --env code=T0xD1_sn888",
     "analyze": "webpack --analyze --config ./configs/webpack.conf.js --color --node-env production --env code=T0xD1_sn888"
   },
+  "browserslist": "last 2 versions, > 1%, not dead",
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -16,6 +17,7 @@
     "@babel/preset-env": "^7.14.4",
     "babel-core": "^6.26.3",
     "babel-loader": "^8.2.2",
+    "cache-loader": "^4.1.0",
     "css-loader": "^5.2.6",
     "file-loader": "^6.2.0",
     "html-webpack-plugin": "^5.3.1",
