@@ -1,9 +1,11 @@
-const path = require('path')
 const cwd = process.cwd()
-const tempPath = path.join(cwd, '.temp')
+const path = require('path')
 const fs = require('fs')
-
+const webpack = require('webpack')
+const tempPath = path.join(cwd, '.temp')
 const joinCwd = (...paths) => path.join(cwd, ...paths)
+const TerserPlugin = require('terser-webpack-plugin')
+const isDevelopment = process.env.NODE_ENV === 'development'
 
 const outputFile = (filenamePath, content, force = false) => {
   if (fs.existsSync(filenamePath) && force) {
@@ -48,7 +50,7 @@ const getWeexEntries = () =>
         .relative(viewPath, appPath)
         .replace(/\\/g, '/')
         .replace('.vue', '')}'
-      import plugin from '@/views/views-plugin'
+      import plugin from '@/views-plugin'
       Vue.use(plugin)
       new Vue({ render: h => h(App) }).$mount('#root')
     `
@@ -57,4 +59,74 @@ const getWeexEntries = () =>
     return acc
   }, {})
 
-console.log(getWeexEntries())
+module.exports = {
+  mode: process.env.NODE_ENV,
+  watch: isDevelopment,
+  context: cwd,
+  entry: getWeexEntries(),
+  output: {
+    clean: true,
+    filename: '[name].weex.js',
+    path: joinCwd('dist'),
+  },
+  resolve: {
+    extensions: ['.js', '.vue', '.json'],
+    alias: {
+      '@': joinCwd('src'),
+      src: joinCwd('src'),
+    },
+  },
+  devtool: false,
+  module: {
+    rules: [
+      {
+        test: /\.js$/,
+        exclude: /node_modules/,
+        use: {
+          loader: 'babel-loader',
+        },
+      },
+      {
+        test: /\.vue$/,
+        exclude: /node_modules/,
+        loader: 'weex-vue-loader',
+        // weex: npm i babel-core
+      },
+      {
+        test: /\.css$/,
+        exclude: /node_modules/,
+        use: ['vue-style-loader', 'css-loader'],
+      },
+      {
+        test: /\.(png|svg|jpg|gif)$/,
+        exclude: /node_modules/,
+        use: [
+          {
+            loader: 'file-loader',
+            options: {
+              publicPath: joinCwd('dist/assets/images'),
+              outputPath: './assets/images/',
+            },
+          },
+        ],
+      },
+    ],
+  },
+  plugins: [
+    new webpack.BannerPlugin({
+      banner: '// { "framework": "Vue"} \n',
+      raw: true,
+    })
+  ],
+  optimization: {
+    minimize: process.env.NODE_ENV === 'production',
+    minimizer: [new TerserPlugin({
+      terserOptions: {
+        format: {
+          comments: /framework/i,
+        },
+      },
+      extractComments: false,
+    })]
+  }
+}

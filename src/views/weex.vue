@@ -1,5 +1,5 @@
 <template>
-  <div>weex-ahah-jjkk-haha-hah</div>
+  <div>weex-page1</div>
 </template>
 
 <script>
