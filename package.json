@@ -4,8 +4,8 @@
   "description": "",
   "main": "dist/main.js",
   "scripts": {
-    "wp": "webpack --config webpack.config.js --progress --color",
-    "wps": "webpack serve --config webpack.config.js --progress --color"
+    "wp": "webpack --config webpack.config.js --progress --color --no-stats",
+    "wps": "webpack serve --config webpack.config.js --color --no-stats --node-env development"
   },
   "keywords": [],
   "author": "",

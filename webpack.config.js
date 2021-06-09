@@ -61,11 +61,12 @@ const getWeexEntries = () =>
   }, {})
 
 // weex
-module.exports = {
+const weexEntries = getWeexEntries()
+const weexConfig = {
   mode: 'development',
   watch: true,
   context: cwd,
-  entry: getWeexEntries(),
+  entry: weexEntries,
   output: {
     clean: true,
     filename: '[name].weex.js',
@@ -124,7 +125,7 @@ module.exports = {
 }
 
 // web preview
-webpack({
+const previewConfig = {
   context: cwd,
   mode: 'development',
   entry: joinCwd('preview/index.js'),
@@ -137,10 +138,10 @@ webpack({
   },
   devServer: {
     contentBase: cwd,
-    // openPage: 'preview.html',
+    // openPage: '?page=aa|bb',
     // index: 'index.html',
     compress: true, // 开启 gzip
-    // bonjour: false, // 广播？
+    bonjour: true, // 广播？
     open: true,
     // host: 'localhost',
     // port: 8080,
@@ -172,13 +173,40 @@ webpack({
   },
   plugins: [
     new VueLoaderPlugin(),
+    new webpack.DefinePlugin({
+      process: {
+        PAGE_NAMES: JSON.stringify(Object.keys(weexEntries))
+      }
+    }),
     new HtmlWebpackPlugin({
       title: 'weex preview',
       template: joinCwd('preview/index.html')
     }),
   ]
-}, (err, stats) => {
-  if(err || stats.hasErrors()) {
-    console.error('err')
+}
+
+webpack(weexConfig, (err, stats) => {
+
+  if (err) {
+    console.error(err.stack || err);
+    if (err.details) {
+      console.error(err.details);
+    }
+    return;
   }
+
+  const info = stats.toJson()
+
+  if (stats.hasErrors()) {
+    console.error(info.errors);
+  }
+
+  if (stats.hasWarnings()) {
+    console.warn(info.errors);
+  }
+
+  console.log('weex startTime', stats.startTime)
+  console.log('weex   endTime', stats.endTime)
 })
+
+module.exports = previewConfig
