@@ -1,7 +1,7 @@
-// 影响 所有 页面 及 所有 组件
-// 作用：去除了冗余入口文件
+import weexConsole from 'weex-console'
+
 export default {
   install(Vue) {
-
+    Vue.use(weexConsole)
   }
 }

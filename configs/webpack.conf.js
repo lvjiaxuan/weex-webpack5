@@ -8,9 +8,9 @@ const isDevelopment = process.env.NODE_ENV === 'development'
 isDevelopment &&
   webpack(weexConfig, (err, stats) => {
     if (err) {
-      console.error(err.stack || err)
+      console.error(1, err.stack || err)
       if (err.details) {
-        console.error(err.details)
+        console.error(2, err.details)
       }
       return
     }
@@ -18,11 +18,11 @@ isDevelopment &&
     const info = stats.toJson()
 
     if (stats.hasErrors()) {
-      console.error(info.errors)
+      console.error(3, info.errors)
     }
 
     if (stats.hasWarnings()) {
-      console.warn(info.errors)
+      console.warn(4, info.errors)
     }
 
     console.log('weex startTime', stats.startTime)

@@ -25,8 +25,8 @@ module.exports = {
   entry: joinCwd('preview/index.js'),
   output: {
     clean: true,
-    // path: joinCwd('preview/dist'),
-    // filename: '[name].js',
+    path: joinCwd('preview/dist'),
+    filename: '[name].js',
   },
   resolve: {
     extensions: ['.js', '.vue'],
@@ -36,11 +36,12 @@ module.exports = {
     host: getIPv4(),
     contentBase: joinCwd('dist'),
     watchContentBase: false,
+    historyApiFallback: true,
     // openPage: '?page=aa|bb',
     // index: 'index.html',
     compress: true, // 开启 gzip
     // bonjour: true, // 广播？
-    open: false,
+    open: true,
     // useLocalIp: true,
     hot: true,
     // port: 8080,
@@ -48,6 +49,11 @@ module.exports = {
     // before: (app, server, compiler) => {},
     // after: (app, server, compiler) => {},
     // allowedHosts: [],
+    watchOptions: {
+      ignored: /node_modules/,
+      aggregateTimeout: 333,
+      poll: false
+    },
   },
   module: {
     rules: [
@@ -67,6 +73,14 @@ module.exports = {
         test: /\.css$/,
         exclude: /node_modules/,
         use: ['vue-style-loader', 'css-loader'],
+      },
+      {
+        test: /\.scss$/,
+        use: [
+          'vue-style-loader',
+          'css-loader',
+          'sass-loader',
+        ]
       },
     ],
   },

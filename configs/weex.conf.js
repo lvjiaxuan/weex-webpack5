@@ -80,20 +80,44 @@ module.exports = {
   watchOptions: {
     ignored: /node_modules/,
     aggregateTimeout: 333,
-    poll: false
+    poll: false,
   },
   module: {
-    noParse: /dolphin-weex-ui/,
+    // noParse: /dolphin-weex-ui/,
     rules: [
       {
         test: /\.js$/,
-        exclude: /node_modules/,
+        include: [joinCwd('src'), /node_modules(\/|\\)dolphin-weex-ui/],
         use: ['babel-loader'],
       },
       {
+        test: /\.css$/,
+        include: [joinCwd('src'), /node_modules(\/|\\)dolphin-weex-ui/],
+        use: ['vue-style-loader', 'css-loader'],
+      },
+      {
+        test: /\.scss$/,
+        include: [joinCwd('src'), /node_modules(\/|\\)dolphin-weex-ui/],
+        use: ['vue-style-loader', 'css-loader', 'sass-loader'],
+      },
+      {
         test: /\.vue$/,
-        exclude: /node_modules/,
-        use: ['weex-vue-loader'],
+        include: [joinCwd('src'), /node_modules(\/|\\)dolphin-weex-ui/],
+        use: [
+          {
+            loader: 'weex-vue-loader',
+            options: {
+              loaders: {
+                js: [
+                  {
+                    loader: joinCwd('node_modules/babel-loader'),
+                    options: require('./../babel.config'),
+                  },
+                ],
+              },
+            },
+          },
+        ],
         // weex: npm i babel-core
       },
       {
@@ -120,17 +144,19 @@ module.exports = {
     new webpack.BannerPlugin({
       banner: '// { "framework": "Vue"} \n',
       raw: true,
-    })
+    }),
   ],
   optimization: {
     minimize: process.env.NODE_ENV === 'production',
-    minimizer: [new TerserPlugin({
-      terserOptions: {
-        format: {
-          comments: /framework/i,
+    minimizer: [
+      new TerserPlugin({
+        terserOptions: {
+          format: {
+            comments: /framework/i,
+          },
         },
-      },
-      extractComments: false,
-    })]
-  }
+        extractComments: false,
+      }),
+    ],
+  },
 }
