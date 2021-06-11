@@ -6,7 +6,7 @@
       background-color="rgba(0,0,0,0)"
     />
 
-    <text class="test-color">123qwe</text>
+    <text class="test-color">123333ddqwee</text>
 
     <weex-console />
   </div>
@@ -23,6 +23,9 @@ export default {
     return {
       foo: true
     }
+  },
+
+  created() {
   }
 }
 </script>

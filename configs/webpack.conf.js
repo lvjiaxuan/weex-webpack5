@@ -1,34 +1,52 @@
 const cwd = process.cwd()
+const fs = require('fs')
+const path = require('path')
 const webpack = require('webpack')
 const ZipPlugin = require('zip-webpack-plugin')
 const weexConfig = require('./weex.conf')
 const previewConfig = require('./preview.conf')
 const isDevelopment = process.env.NODE_ENV === 'development'
+const joinCwd = (...paths) => path.join(cwd, ...paths)
 
-isDevelopment &&
+const getFormatDate = (format = 'yyyyMMddHHmmss') => {
+  const now = new Date()
+  return format
+    .replace('yyyy', now.getFullYear().toString())
+    .replace(/MM/, (now.getMonth() + 1).toString().padStart(2, 0))
+    .replace('dd', now.getDate().toString().padStart(2, 0))
+    .replace('HH', now.getHours().toString().padStart(2, 0))
+    .replace(/mm/, now.getMinutes().toString().padStart(2, 0))
+    .replace('ss', now.getSeconds().toString().padStart(2, 0))
+}
+
+if (isDevelopment) {
+  let lastTime = 0
+  fs.watch(joinCwd('src'), { recursive: true }, (eventType, filename) => {
+    // 防抖
+    const now = Date.now()
+    if(now - lastTime > 1000) {
+      console.log()
+      console.log(getFormatDate('HH:mm:ss'), filename, eventType, 'please wait...')
+    }
+    lastTime = now
+  })
+
   webpack(weexConfig, (err, stats) => {
     if (err) {
-      console.error(1, err.stack || err)
+      console.error(err.stack || err)
       if (err.details) {
-        console.error(2, err.details)
+        console.error(err.details)
       }
       return
     }
 
     const info = stats.toJson()
+    stats.hasErrors() && info.errors.length && console.error(info.errors)
+    stats.hasWarnings() && info.errors.length && console.warn(info.errors)
 
-    if (stats.hasErrors()) {
-      console.error(3, info.errors)
-    }
-
-    if (stats.hasWarnings()) {
-      console.warn(4, info.errors)
-    }
-
-    console.log('weex startTime', stats.startTime)
-    console.log('weex   endTime', stats.endTime)
-    console.log('     spentTime', stats.endTime - stats.startTime)
+    console.log(getFormatDate('HH:mm:ss'), 'weex spent time', (stats.endTime - stats.startTime) + 'ms')
   })
+}
 
 module.exports = isDevelopment
   ? previewConfig
@@ -37,13 +55,7 @@ module.exports = isDevelopment
       weexConfig.plugins.push(
         new ZipPlugin({
           path: cwd,
-          filename: `${env.code}_${
-            now.getFullYear().toString() +
-            (now.getMonth() + 1).toString().padStart(2, 0) +
-            now.getDate().toString().padStart(2, 0) +
-            now.getHours().toString().padStart(2, 0) +
-            now.getMinutes().toString().padStart(2, 0)
-          }`,
+          filename: `${env.code}_${getFormatDate('yyyyMMddHHmm')}`,
           pathPrefix: env.code,
         })
       )
