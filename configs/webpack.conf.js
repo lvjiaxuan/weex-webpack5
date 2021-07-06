@@ -42,7 +42,7 @@ if (isDevelopment) {
 
     const info = stats.toJson()
     stats.hasErrors() && info.errors.length && console.error(info.errors)
-    stats.hasWarnings() && info.errors.length && console.warn(info.errors)
+    stats.hasWarnings() && info.warnings.length && console.warn(typeof info.warnings[0].details)
 
     console.log(getFormatDate('HH:mm:ss'), 'weex spent time', (stats.endTime - stats.startTime) + 'ms')
   })
