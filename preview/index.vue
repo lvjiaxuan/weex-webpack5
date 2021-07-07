@@ -2,7 +2,7 @@
   <main class="wrapper">
     <h1>请使用美居app对二维码进行扫一扫</h1>
     <a :href="url" target="_blank">{{ url }}</a>
-    <div ref="qart"></div>
+    <canvas ref="qart" style="width: 300px; height: 300px"></canvas>
 
     <section>
       <button
@@ -18,7 +18,7 @@
 </template>
 
 <script>
-import QArt from 'qartjs'
+import QRCode from 'qrcode'
 
 export default {
   name: 'preview',
@@ -39,11 +39,12 @@ export default {
     renderQrcode(name) {
       this.currentPage = name
       this.url = `http://${window.location.host}/${name}.weex.js`
-      new QArt({
-        value: `http://${window.location.host}/${name}.weex.js`,
-        imagePath: '',
-        size: 300,
-      }).make(this.$refs.qart)
+      QRCode.toCanvas(
+        this.$refs.qart,
+        this.url,
+        { width: 300 },
+        error => error && console.log('qrcode', error)
+      )
     },
   },
 }
